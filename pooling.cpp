@@ -1,4 +1,5 @@
 #include "def.h"
+#include "library.h"
 
 vector<vf> maxPooling(vector<vf > v)
 {

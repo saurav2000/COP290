@@ -1,4 +1,5 @@
 #include "def.h"
+#include "library.h"
 
 vector<vf> relu(vector<vf> vec)
 {

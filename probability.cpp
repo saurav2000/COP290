@@ -1,4 +1,5 @@
 #include "defs.h"
+#include "library.h"
 
 vf sigmoid(vf v)
 {

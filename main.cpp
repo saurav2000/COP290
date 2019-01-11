@@ -1,3 +1,6 @@
+#include "defs.h"
+#include "library.h"
+
 int main(int argc, char** argv) 
 {
 	if(argc==6)
@@ -46,4 +49,5 @@ int main(int argc, char** argv)
 	{
 		//call help()
 	}
+	return 0;
 }

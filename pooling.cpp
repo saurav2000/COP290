@@ -1,7 +1,7 @@
 #include "def.h"
 #include "library.h"
 
-vector<vf> maxPooling(vector<vf > v)
+vector<vf> maxPool(vector<vf > v)
 {
     int n=v.size();
     int i,j,k;
@@ -35,7 +35,7 @@ vector<vf> maxPooling(vector<vf > v)
     return m_pool;
 }
 
-vector<vf> average_pool(vector<vf > v)
+vector<vf> averagePool(vector<vf > v)
 {
     int n=v.size();
     int i,j,k;

@@ -30,7 +30,11 @@ vector<vf> tanh(vector<vf> vec)
 		for(j=0;j<n;j++)
 		{
 		    float x=vec[i][j];
-			float y=(float)(1-exp(-2*x))/(exp(-2*x)+1);
+			float y;
+			if(x>=0)
+				y=(float)(1-exp(-2*x))/(exp(-2*x)+1);
+			else
+				y=(float)(-1+exp(2*x))/(exp(2*x)+1);
 			temp.pb(y);
 		}
 		v1.pb(temp);

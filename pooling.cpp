@@ -1,7 +1,7 @@
 #include "defs.h"
 #include "library.h"
 
-vector<vf>& maxPool(vector<vf> &v)
+void maxPool(vector<vf> &v, vector<vf>& m_pool)
 {
     int n=v.size();
     int i,j,k;
@@ -18,9 +18,7 @@ vector<vf>& maxPool(vector<vf> &v)
         v.pb(v1);
         n++;
     }
-    
-    vector<vf > m_pool;
-    
+	
     for(i=0;i<n;i+=2)
     {
         vf temp;
@@ -36,12 +34,11 @@ vector<vf>& maxPool(vector<vf> &v)
     return m_pool;
 }
 
-vector<vf>& averagePool(vector<vf> &v)
+void averagePool(vector<vf> &v, vector<vf>& av_pool)
 {
     int n=v.size();
     int i,j,k;
     
-    vector<vf > av_pool;
     
     for(i=0;i<n;i+=2)
     {

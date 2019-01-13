@@ -34,7 +34,7 @@ int main(int argc, char** argv)
 	{
 		if(argv[1]=="convolution_withpadding_matrixmult")
 		{
-			//call function
+			call function
 		}
 		else
 		{

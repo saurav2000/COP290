@@ -18,5 +18,6 @@
 #include <bitset>
 #include <regex>
 #include <numeric>
+#include <stdexcept>
 
 using namespace std;

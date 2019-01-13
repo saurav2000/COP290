@@ -1,7 +1,7 @@
 #include "def.h"
 #include "library.h"
 
-vector<vf> relu(vector<vf> vec)
+void relu(vector<vf> &vec)
 {
 	int n=vec.size();
 	int i,j;
@@ -9,20 +9,15 @@ vector<vf> relu(vector<vf> vec)
 
 	for(i=0;i<n;i++)
 	{
-		vf temp;
 		for(j=0;j<n;j++)
-			temp.pb(max(0.0f,vec[i][j]));
-		v1.pb(temp);
+			vec[i][j]=max(0.0f,vec[i][j]);
 	}
-	
-	return v1;
 }
 
-vector<vf> tanh(vector<vf> vec)
+void tanh(vector<vf> &vec)
 {
 	int n=vec.size();
 	int i,j;
-	vector<vf> v1;
 
 	for(i=0;i<n;i++)
 	{
@@ -30,15 +25,10 @@ vector<vf> tanh(vector<vf> vec)
 		for(j=0;j<n;j++)
 		{
 		    float x=vec[i][j];
-			float y;
 			if(x>=0)
-				y=(float)(1-exp(-2*x))/(exp(-2*x)+1);
+				vec[i][j]=(float)(1-exp(-2*x))/(exp(-2*x)+1);
 			else
-				y=(float)(-1+exp(2*x))/(exp(2*x)+1);
-			temp.pb(y);
+				vec[i][j]=(float)(-1+exp(2*x))/(exp(2*x)+1);
 		}
-		v1.pb(temp);
 	}
-	
-	return v1;
 }

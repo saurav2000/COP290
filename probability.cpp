@@ -1,30 +1,22 @@
 #include "defs.h"
 #include "library.h"
 
-vf sigmoid(vf v)
+void sigmoid(vf &v)
 {
-	vf res;
 	for(int i=0;i<v.size();++i)
-	{
-		float f = exp(-v[i]);
-		res.pb(1/(1+f));
-	}
-	return res;
+		v[i]=1/(1+exp(-v[i]));
 }
 
-vf softmax(vf v)
+void softmax(vf &v)
 {
-	vf res;
 	float sum=0.0f;
+
 	for(int i=0;i<v.size();++i)
 	{
-		float f=exp(v[i]);
-		sum+=f;
-		res.pb(f);
+		v[i]=exp(v[i]);
+		sum+=v[i];
 	}
 
-	for(int i=0;i<res.size();++i)
-		res[i]/=sum;
-
-	return res;
+	for(int i=0;i<v.size();++i)
+		v[i]/=sum;
 }

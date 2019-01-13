@@ -1,10 +1,11 @@
 #include "defs.h"
 #include "library.h"
 
-vector<vf> maxPool(vector<vf > v)
+vector<vf> maxPool(vector<vf> &v)
 {
     int n=v.size();
     int i,j,k;
+
     if(n&1)
     {
         vf v1;
@@ -35,7 +36,7 @@ vector<vf> maxPool(vector<vf > v)
     return m_pool;
 }
 
-vector<vf> averagePool(vector<vf > v)
+vector<vf> averagePool(vector<vf> &v)
 {
     int n=v.size();
     int i,j,k;

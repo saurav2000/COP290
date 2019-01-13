@@ -1,5 +1,32 @@
 #include "defs.h"
 #include "library.h"
+#include "functions.h"
+
+vector<vf> readMatrix(string s)
+{
+	vector<vf> res;
+	fstream file;
+	float f;
+	file.open(s);
+	string line;
+	
+	while(getline(file,line))
+	{
+		vf temp;
+		stringstream ss(line);
+		while(ss>>f)
+			temp.pb(f);
+		res.pb(temp);
+	}
+
+	return res;
+}
+
+void help(string s)
+{
+
+}
+
 
 int main(int argc, char** argv) 
 {

@@ -20,7 +20,7 @@ void print(vf v)
 	cout<<"\n";
 }
 
-int readMatrix(string s,vector<vf> &v1,int n)
+int readMatrix(char* s,vector<vf> &v1,int n)
 {
 	if(n==0)
 		return 2;
@@ -63,7 +63,7 @@ int readMatrix(string s,vector<vf> &v1,int n)
 	return 0;
 }
 
-int readVector(string s,vf& v1,int n)
+int readVector(char* s,vf& v1,int n)
 {
 	if(n==0)
 		return 2;
@@ -127,13 +127,11 @@ int main(int argc, char** argv)
 	{
 		if(!strcmp(argv[1],"convolution_withpadding_matrixmult")||!!strcmp(argv[1],"convolution_withpadding_conv"))
 		{
-			int n1,n2,k;
-			try{
-				k=stoi(argv[2]);
-				n1=stoi(argv[4]);
-				n2=stoi(argv[6]);
-			}
-			catch(invalid_argument& e)
+			int k=atoi(argv[2]);
+			int n1=atoi(argv[4]);
+			int n2=atoi(argv[6]);
+
+			if(k==0||n1==0||n2==0)
 			{
 				help("Invalid Argument");
 				return 0;
@@ -183,12 +181,10 @@ int main(int argc, char** argv)
 	{
 		if(!strcmp(argv[1],"convolution_withoutpadding_matrixmult")||!strcmp(argv[1],"convolution_withoutpadding_conv"))
 		{
-			int n1,n2;
-			try
-			{
-				n1=stoi(argv[3]);
-				n2=stoi(argv[5]);
-			}catch(invalid_argument& e)
+			int n1=atoi(argv[3]);
+			int n2=atoi(argv[5]);
+			
+			if(n1==0||n2==0)
 			{
 				help("Invalid Argument");
 				return 0;
@@ -236,12 +232,11 @@ int main(int argc, char** argv)
 
 	else if(argc==4)
 	{
-		if(!strcmp(argv[1],"subsampling_maxpooling"))
+		if(!strcmp(argv[1],"subsampling_maxpooling")||!strcmp(argv[1],"subsampling_avgpooling"))
 		{
-			int n1;
-			try{
-				n1=stoi(argv[3]);
-			}catch(invalid_argument& e)
+			int n1=atoi(argv[3]);;
+			
+			if(n1==0)
 			{
 				help("Invalid Argument");
 				return 0;
@@ -263,46 +258,17 @@ int main(int argc, char** argv)
 			}
 
 			vector<vf> res;
-			maxPool(v1, res);
-			print(res);
-		}
-		else if(!strcmp(argv[1],"subsampling_avgpooling"))
-		{
-			int n1;
-			try{
-				n1=stoi(argv[3]);
-			}catch(invalid_argument& e)
-			{
-				help("Invalid Argument");
-				return 0;
-			}
-
-			vector<vf> v1;
-			int y=readMatrix(argv[2],v1,n1);
-
-			if(y==2)
-			{
-				help("This File does not contain any data");
-				return 0;
-			}
-
-			if(y==1)
-			{
-				help("Invalid Data");
-				return 0;
-			}
-			
-			vector<vf> res;
-			averagePool(v1, res);
+			if(!strcmp(argv[1],"subsampling_maxpooling"))
+				maxPool(v1, res);
+			else
+				averagePool(v1, res);
 			print(res);
 		}
 
-		else if(!strcmp(argv[1],"activation_relu"))
+		else if(!strcmp(argv[1],"activation_relu")||!strcmp(argv[1],"activation_tanh"))
 		{
-			int n1;
-			try{
-				n1=stoi(argv[3]);
-			}catch(invalid_argument& e)
+			int n1=atoi(argv[3]);
+			if(n1==0)
 			{
 				help("Invalid Argument");
 				return 0;
@@ -323,44 +289,17 @@ int main(int argc, char** argv)
 				return 0;
 			}
 
-			relu(v1);
+			if(!strcmp(argv[1],"activation_relu"))
+				relu(v1);
+			else
+				tanh(v1);
 			print(v1);
 		}
-		else if(!strcmp(argv[1],"activation_tanh"))
+		
+		else if(!strcmp(argv[1],"probability_sigmoid")||!strcmp(argv[1],"probability_softmax"))
 		{
-			int n1;
-			try{
-				n1=stoi(argv[3]);
-			}catch(invalid_argument& e)
-			{
-				help("Invalid Argument");
-				return 0;
-			}
-
-			vector<vf> v1;
-			int y=readMatrix(argv[2],v1,n1);
-
-			if(y==2)
-			{
-				help("This File does not contain any data");
-				return 0;
-			}
-
-			if(y==1)
-			{
-				help("Invalid Data");
-				return 0;
-			}
-			
-			tanh(v1);
-			print(v1);
-		}
-		else if(!strcmp(argv[1],"probability_sigmoid"))
-		{
-			int n1;
-			try{
-				n1=stoi(argv[3]);
-			}catch(invalid_argument& e)
+			int n1=atoi(argv[3]);
+			if(n1==0)
 			{
 				help("Invalid Argument");
 				return 0;
@@ -380,39 +319,13 @@ int main(int argc, char** argv)
 				help("Invalid Data");
 				return 0;
 			}
-			
-			sigmoid(v1);
+			if(!strcmp(argv[1],"probability_sigmoid"))
+				sigmoid(v1);
+			else
+				softmax(v1);
 			print(v1);
 		}
-		else if(!strcmp(argv[1],"probability_softmax"))
-		{
-			int n1;
-			try{
-				n1=stoi(argv[3]);
-			}catch(invalid_argument& e)
-			{
-				help("Invalid Argument");
-				return 0;
-			}
-
-			vf v1;
-			int y=readVector(argv[2],v1,n1);
-			
-			if(y==2)
-			{
-				help("This File does not contain any data");
-				return 0;
-			}
-
-			if(y==1)
-			{
-				help("Invalid Data");
-				return 0;
-			}
-			
-			softmax(v1);
-			print(v1);
-		}
+		
 		else
 			help("Invalid Format");
 	}
@@ -422,4 +335,3 @@ int main(int argc, char** argv)
 	}
 	return 0;
 }
-

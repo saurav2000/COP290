@@ -30,8 +30,6 @@ void maxPool(vector<vf> &v, vector<vf>& m_pool)
         }
         m_pool.pb(temp);
     }
-    
-    return m_pool;
 }
 
 void averagePool(vector<vf> &v, vector<vf>& av_pool)
@@ -58,7 +56,5 @@ void averagePool(vector<vf> &v, vector<vf>& av_pool)
         }
         av_pool.pb(temp);
     }
-    
-    return av_pool;
-    
+        
 }

@@ -2,49 +2,64 @@
 #include "library.h"
 #include "functions.h"
 
-void readMatrix(string s,vector<vf> &v1)
+int readMatrix(string s,vector<vf> &v1,int n)
 {
 	vector<vf> res;
-	fstream file;
+	ifstream filein;
 	float f;
-	file.open(s);
+	filein.open(s);
 
 	string line;
-	
-	while(getline(file,line))
+	int j;
+	while(filein>>f)
 	{
 		vf temp;
-		stringstream ss(line);
-		while(ss>>f)
+		temp.push_back(f);
+		j=1;
+		while(j<n && filein>>f)
+		{
 			temp.pb(f);
+			j++;
+		}
+		if(j<n)
+			return 1;
 		res.pb(temp);
 	}
+	filein.close();
+	if(res.size()==0)
+		return 2;
+	if(res.size()<n)
+		return 1;
 
-	int n=res.size();
-
-	for(int i=0;i<n;i++)
+	for(int i=0;i<res.size();i++)
 	{
 		vf temp;
+
 		for(int j=0;j<n;j++)
 			temp.push_back(res[j][i]);
 		v1.push_back(temp);
 	}
+
+	return 0;
 }
 
-void readVector(string s,vf v1)
+int readVector(string s,vf& v1,int n)
 {
-	fstream file;
+	ifstream fin;
 	float f;
-	file.open(s);
+	fin.open(s);
 
-	string line;
-	getline(file,line);
-	
-	vf temp;
-	stringstream ss(line);
-	while(ss>>f)
+	while(fin>>f)
+	{
 		v1.pb(f);
+	}
+	fin.close();
+	if(v1.size()==0)
+		return 2;
 
+	if(v1.size()!=n)
+		return 1;
+	return 0;
 }
 
 void help(string s)
@@ -98,28 +113,28 @@ int main(int argc, char** argv)
 
 			vector<vf> v1;
 			vector<vf> v2;
-			readMatrix(argv[3],v1);
+			int y=readMatrix(argv[3],v1,n1);
 
-			if(v1.size==0)
+			if(y==2)
 			{
 				help("This File does not contain any data");
 				return 0;
 			}
 
-			if(v1.size()!=n1)
+			if(y==1)
 			{
 				help("Invalid Data");
 				return 0;
 			}
-			readMatrix(argv[5],v2);
+			y=readMatrix(argv[5],v2,n2);
 
-			if(v2.size==0)
+			if(y==2)
 			{
 				help("This File does not contain any data");
 				return 0;
 			}
-			
-			if(v2.size()!=n2)
+
+			if(y==1)
 			{
 				help("Invalid Data");
 				return 0;
@@ -142,28 +157,28 @@ int main(int argc, char** argv)
 
 			vector<vf> v1;
 			vector<vf> v2;
-			readMatrix(argv[3],v1);
+			int y=readMatrix(argv[3],v1,n1);
 
-			if(v1.size==0)
+			if(y==2)
 			{
 				help("This File does not contain any data");
 				return 0;
 			}
 
-			if(v1.size()!=n1)
+			if(y==1)
 			{
 				help("Invalid Data");
 				return 0;
 			}
-			readMatrix(argv[5],v2);
+			y=readMatrix(argv[5],v2,n2);
 
-			if(v2.size==0)
+			if(y==2)
 			{
 				help("This File does not contain any data");
 				return 0;
 			}
-			
-			if(v2.size()!=n2)
+
+			if(y==1)
 			{
 				help("Invalid Data");
 				return 0;
@@ -187,15 +202,15 @@ int main(int argc, char** argv)
 			}
 
 			vector<vf> v1;
-			readMatrix(argv[2],v1);
+			int y=readMatrix(argv[2],v1,n1);
 
-			if(v1.size==0)
+			if(y==2)
 			{
 				help("This File does not contain any data");
 				return 0;
 			}
 
-			if(v1.size()!=n1)
+			if(y==1)
 			{
 				help("Invalid Data");
 				return 0;
@@ -215,15 +230,15 @@ int main(int argc, char** argv)
 			}
 
 			vector<vf> v1;
-			readMatrix(argv[2],v1);
+			int y=readMatrix(argv[2],v1,n1);
 
-			if(v1.size==0)
+			if(y==2)
 			{
 				help("This File does not contain any data");
 				return 0;
 			}
 
-			if(v1.size()!=n1)
+			if(y==1)
 			{
 				help("Invalid Data");
 				return 0;
@@ -246,15 +261,15 @@ int main(int argc, char** argv)
 			}
 
 			vector<vf> v1;
-			readMatrix(argv[2],v1);
+			int y=readMatrix(argv[2],v1,n1);
 
-			if(v1.size==0)
+			if(y==2)
 			{
 				help("This File does not contain any data");
 				return 0;
 			}
 
-			if(v1.size()!=n1)
+			if(y==1)
 			{
 				help("Invalid Data");
 				return 0;
@@ -273,15 +288,15 @@ int main(int argc, char** argv)
 			}
 
 			vector<vf> v1;
-			readMatrix(argv[2],v1);
+			int y=readMatrix(argv[2],v1,n1);
 
-			if(v1.size==0)
+			if(y==2)
 			{
 				help("This File does not contain any data");
 				return 0;
 			}
 
-			if(v1.size()!=n1)
+			if(y==1)
 			{
 				help("Invalid Data");
 				return 0;
@@ -299,15 +314,15 @@ int main(int argc, char** argv)
 			}
 
 			vf v1;
-			readVector(argv[2],v1);
+			int y=readVector(argv[2],v1,n1);
 
-			if(v1.size==0)
+			if(y==2)
 			{
 				help("This File does not contain any data");
 				return 0;
 			}
 
-			if(v1.size()!=n1)
+			if(y==1)
 			{
 				help("Invalid Data");
 				return 0;
@@ -325,14 +340,15 @@ int main(int argc, char** argv)
 			}
 
 			vf v1;
-			readVector(argv[2],v1);
-			if(v1.size==0)
+			int y=readVector(argv[2],v1,n1);
+			
+			if(y==2)
 			{
 				help("This File does not contain any data");
 				return 0;
 			}
-			
-			if(v1.size()!=n1)
+
+			if(y==1)
 			{
 				help("Invalid Data");
 				return 0;

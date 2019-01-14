@@ -1,0 +1,37 @@
+In this assignment we to call the functions run make all on the command line
+Now run ./image followed by the argument given below specific to the function
+
+To call Convolution with padding with matrix multiplication:
+	convolution_withpadding_matrixmult padsize matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows
+
+To call Convolution with padding with Convolution:
+	convolution_withpadding_conv padsize matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows
+
+To call Convolution without padding with matrix multiplication:
+	convolution_withoutpadding_matrixmult matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows
+
+To call Convolution without padding with Convolution:
+	convolution_withoutpadding_conv matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows
+
+To call relu activation:
+	activation_relu matrix1.txt matrix1_numrows
+
+To call tanh activation:
+	activation_tanh matrix1.txt matrix1_numrows
+
+To do subsampling with maxpooling:
+	subsampling_maxpooling matrix1.txt matrix1_numrows
+
+To do subsampling with average pooling:
+	subsampling_avgpooling matrix1.txt matrix1_numrows
+
+To convert random float vector to probability vector using softmax:
+	probability_softmax matrix1.txt matrix1_numrows
+
+To convert random float vector to probability vector using sigmoid
+	probability_sigmoid matrix1.txt matrix1_numrows
+
+NOTE: 
+1. For sub-sampling (both odd and even) we have chosen the sampling matrix to be 2x2 and the stride to be 2 always.
+2. For Max pooling we padded the odd size matrices and for average pooling we considered the average of only two elements 		when we reached the edge of the matrix.
+3. For the convolution we inverted the kernel.

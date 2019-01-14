@@ -7,7 +7,7 @@ all: image
 image: main.o $(obj)
 	g++ -o image main.o $(obj)
 
-main.o: conv.o nonlactivation.o pooling.o probability.o functions.h $(head)
+main.o: $(obj) functions.h $(head)
 	$(g) main.cpp
 
 conv.o: $(head)
@@ -21,3 +21,6 @@ pooling.o: $(head)
 
 probability.o: $(head)
 	$(g) probability.cpp
+
+clean:
+	rm image *.o

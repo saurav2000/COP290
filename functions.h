@@ -1,6 +1,4 @@
-#ifndef
 #include <vector>
-#endif
 
 void relu(std::vector<std::vector<float>>& vec);
 void tanh(std::vector<std::vector<float>>& vec);

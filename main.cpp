@@ -123,13 +123,19 @@ void help(string s)
 
 int main(int argc, char** argv) 
 {
-	if(argc==7)
+	int time;
+	if(strcmp(argv[0],"time"))
+		time=0;
+	else
+		time=1;
+	
+	if(argc==7+time)
 	{
-		if(!strcmp(argv[1],"convolution_withpadding_matrixmult")||!!strcmp(argv[1],"convolution_withpadding_conv"))
+		if(!strcmp(argv[1+time],"convolution_withpadding_matrixmult")||!!strcmp(argv[1+time],"convolution_withpadding_conv"))
 		{
-			int k=atoi(argv[2]);
-			int n1=atoi(argv[4]);
-			int n2=atoi(argv[6]);
+			int k=atoi(argv[2+time]);
+			int n1=atoi(argv[4+time]);
+			int n2=atoi(argv[6+time]);
 
 			if(k==0||n1==0||n2==0)
 			{
@@ -139,7 +145,7 @@ int main(int argc, char** argv)
 
 			vector<vf> v1;
 			vector<vf> v2;
-			int y=readMatrix(argv[3],v1,n1);
+			int y=readMatrix(argv[3+time],v1,n1);
 
 			if(y==2)
 			{
@@ -152,7 +158,7 @@ int main(int argc, char** argv)
 				help("Invalid Data");
 				return 0;
 			}
-			y=readMatrix(argv[5],v2,n2);
+			y=readMatrix(argv[5+time],v2,n2);
 
 			if(y==2)
 			{
@@ -167,7 +173,7 @@ int main(int argc, char** argv)
 			}
 
 			vector<vf> res;
-			if(!strcmp(argv[1],"convolution_withpadding_matrixmult"))
+			if(!strcmp(argv[1+time],"convolution_withpadding_matrixmult"))
 				conv_matrmult_pad(v1, v2, k, res);
 			else
 				convolution_pad(v1, v2, k, res);
@@ -177,12 +183,12 @@ int main(int argc, char** argv)
 			help("Invalid Format");
 	}
 
-	else if(argc==6)
+	else if(argc==6+time)
 	{
-		if(!strcmp(argv[1],"convolution_withoutpadding_matrixmult")||!strcmp(argv[1],"convolution_withoutpadding_conv"))
+		if(!strcmp(argv[1+time],"convolution_withoutpadding_matrixmult")||!strcmp(argv[1+time],"convolution_withoutpadding_conv"))
 		{
-			int n1=atoi(argv[3]);
-			int n2=atoi(argv[5]);
+			int n1=atoi(argv[3+time]);
+			int n2=atoi(argv[5+time]);
 			
 			if(n1==0||n2==0)
 			{
@@ -192,7 +198,7 @@ int main(int argc, char** argv)
 
 			vector<vf> v1;
 			vector<vf> v2;
-			int y=readMatrix(argv[2],v1,n1);
+			int y=readMatrix(argv[2+time],v1,n1);
 
 			if(y==2)
 			{
@@ -205,7 +211,7 @@ int main(int argc, char** argv)
 				help("Invalid Data");
 				return 0;
 			}
-			y=readMatrix(argv[4],v2,n2);
+			y=readMatrix(argv[4+time],v2,n2);
 
 			if(y==2)
 			{
@@ -220,7 +226,7 @@ int main(int argc, char** argv)
 			}
 			
 			vector<vf> res;
-			if(!strcmp(argv[1],"convolution_withoutpadding_matrixmult"))
+			if(!strcmp(argv[1+time],"convolution_withoutpadding_matrixmult"))
 				conv_matrmult_npad(v1, v2, res);
 			else
 				convolution_npad(v1, v2, res);
@@ -230,11 +236,11 @@ int main(int argc, char** argv)
 			help("Invalid Format");
 	}
 
-	else if(argc==4)
+	else if(argc==4+time)
 	{
-		if(!strcmp(argv[1],"subsampling_maxpooling")||!strcmp(argv[1],"subsampling_avgpooling"))
+		if(!strcmp(argv[1+time],"subsampling_maxpooling")||!strcmp(argv[1+time],"subsampling_avgpooling"))
 		{
-			int n1=atoi(argv[3]);;
+			int n1=atoi(argv[3+time]);;
 			
 			if(n1==0)
 			{
@@ -243,7 +249,7 @@ int main(int argc, char** argv)
 			}
 
 			vector<vf> v1;
-			int y=readMatrix(argv[2],v1,n1);
+			int y=readMatrix(argv[2+time],v1,n1);
 
 			if(y==2)
 			{
@@ -258,16 +264,16 @@ int main(int argc, char** argv)
 			}
 
 			vector<vf> res;
-			if(!strcmp(argv[1],"subsampling_maxpooling"))
+			if(!strcmp(argv[1+time],"subsampling_maxpooling"))
 				maxPool(v1, res);
 			else
 				averagePool(v1, res);
 			print(res);
 		}
 
-		else if(!strcmp(argv[1],"activation_relu")||!strcmp(argv[1],"activation_tanh"))
+		else if(!strcmp(argv[1+time],"activation_relu")||!strcmp(argv[1+time],"activation_tanh"))
 		{
-			int n1=atoi(argv[3]);
+			int n1=atoi(argv[3+time]);
 			if(n1==0)
 			{
 				help("Invalid Argument");
@@ -275,7 +281,7 @@ int main(int argc, char** argv)
 			}
 
 			vector<vf> v1;
-			int y=readMatrix(argv[2],v1,n1);
+			int y=readMatrix(argv[2+time],v1,n1);
 
 			if(y==2)
 			{
@@ -289,16 +295,16 @@ int main(int argc, char** argv)
 				return 0;
 			}
 
-			if(!strcmp(argv[1],"activation_relu"))
+			if(!strcmp(argv[1+time],"activation_relu"))
 				relu(v1);
 			else
 				tanh(v1);
 			print(v1);
 		}
 		
-		else if(!strcmp(argv[1],"probability_sigmoid")||!strcmp(argv[1],"probability_softmax"))
+		else if(!strcmp(argv[1+time],"probability_sigmoid")||!strcmp(argv[1+time],"probability_softmax"))
 		{
-			int n1=atoi(argv[3]);
+			int n1=atoi(argv[3+time]);
 			if(n1==0)
 			{
 				help("Invalid Argument");
@@ -306,7 +312,7 @@ int main(int argc, char** argv)
 			}
 
 			vf v1;
-			int y=readVector(argv[2],v1,n1);
+			int y=readVector(argv[2+time],v1,n1);
 
 			if(y==2)
 			{
@@ -319,7 +325,7 @@ int main(int argc, char** argv)
 				help("Invalid Data");
 				return 0;
 			}
-			if(!strcmp(argv[1],"probability_sigmoid"))
+			if(!strcmp(argv[1+time],"probability_sigmoid"))
 				sigmoid(v1);
 			else
 				softmax(v1);

@@ -51,7 +51,7 @@ int readMatrix(char* s,vector<vf> &v1,int n)
 	if(res.size()<n)
 		return 1;
 
-	for(int i=0;i<res.size();i++)
+	for(int i=0;i<n;i++)
 	{
 		vf temp;
 

@@ -5,7 +5,7 @@ obj = conv.o nonlactivation.o pooling.o probability.o
 all: image
 
 image: main.o $(obj)
-	g++ -o image main.o $(obj)
+	g++ -pthread -o image main.o $(obj)
 
 main.o: $(obj) functions.h $(head)
 	$(g) main.cpp

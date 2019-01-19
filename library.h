@@ -11,5 +11,7 @@
 #include <stdexcept>
 #include <iomanip>
 #include <cstring>
+#include <pthread.h>
+#include <thread>
 
 using namespace std;

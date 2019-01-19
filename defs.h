@@ -29,3 +29,7 @@
 #ifndef y
 #define y second
 #endif
+
+#ifndef Nmax
+#define Nmax 10
+#endif

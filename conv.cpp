@@ -1,6 +1,14 @@
 #include "defs.h"
 #include "library.h"
 
+struct thread_data
+{
+	int tid;
+	vf v1;
+	vf v2;
+	vf* res;
+};
+
 void padding(vector<vf> &img, int pad)
 {
 	int n=img.size();
@@ -28,6 +36,38 @@ void matrix_multiply(vector<vf>& v1, vf& v2, vf& res)
 			sum+=v1[i][j]*v2[j];
 		res.pb(sum);
 	}
+}
+
+void* thread_routine(void* arg)
+{
+	float sum=0.0f;
+	thread_data* data = (thread_data*)arg;
+	for(int i=0;i<data->v1.size();++i)
+		sum+= data->v1[i]*data->v2[i];
+	
+	vf* temp=data->res;
+	(*temp).at(data->tid)=sum;
+}
+
+void matrix_multiply_pthread(vector<vf>& v1, vf& v2, vf* res,int x)
+{
+	int N = v1.size();
+	pthread_t threads[Nmax];
+	thread_data *td;
+	td= new thread_data[Nmax];
+	int j=0;
+	for(int i=x;i<min(N,Nmax+x);++i,++j)
+	{
+		td[j].tid=i;
+		td[j].v1=v1[i];
+		td[j].v2=v2;
+		td[j].res = res;
+		int thread_error=pthread_create(&threads[j], NULL, thread_routine, (void*) &td[j]);
+		if(thread_error)
+			cout<<"Thread error\n";
+	}
+	for(int i=0;i<j;++i)
+		pthread_join(threads[i], NULL);
 }
 
 void convolution_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res)
@@ -68,9 +108,10 @@ void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res)
 {
 	int na=img.size();
 	int nb=kern.size();
-
+	int n=na-nb+1;
 	vf kern_column;
 	vector<vf> tmatrix;
+
 
 	for(int i=0;i<nb;++i)
 	{
@@ -91,10 +132,18 @@ void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res)
 			tmatrix.pb(temp);
 		}
 	}
-	vf line;
-	matrix_multiply(tmatrix, kern_column, line);
 
-	int n=na-nb+1;
+	vf line(n*n,0);
+	// vf line;
+	int x=n*n;
+	int pt=0;
+	while(x>0)
+	{
+		matrix_multiply_pthread(tmatrix, kern_column, &line,pt);
+		x-=Nmax;
+		pt+=Nmax;
+	}
+	// matrix_multiply(tmatrix, kern_column, line);
 	for(int i=0;i<n;++i)
 	{
 		vf temp2(line.begin()+i*n, line.begin()+(i+1)*n);

@@ -123,15 +123,69 @@ void help(string s)
 
 int main(int argc, char** argv) 
 {
+	chrono::time_point<chrono::system_clock> startT, endT;
+    startT = chrono::system_clock::now();  
 	int time;
 	if(strcmp(argv[0],"time"))
 		time=0;
 	else
 		time=1;
 	
-	if(argc==7+time)
+	if(argc==8+time)
 	{
-		if(!strcmp(argv[1+time],"convolution_withpadding_matrixmult")||!!strcmp(argv[1+time],"convolution_withpadding_conv"))
+		if(!strcmp(argv[1+time],"convolution_withpadding_matrixmult"))
+		{
+			int k=atoi(argv[2+time]);
+			int n1=atoi(argv[4+time]);
+			int n2=atoi(argv[6+time]);
+			int mode=atoi(argv[7+time]);
+
+			if(k==0||n1==0||n2==0||mode==0)
+			{
+				help("Invalid Argument");
+				return 0;
+			}
+
+			vector<vf> v1;
+			vector<vf> v2;
+			int y=readMatrix(argv[3+time],v1,n1);
+
+			if(y==2)
+			{
+				help("This File does not contain any data");
+				return 0;
+			}
+
+			if(y==1)
+			{
+				help("Invalid Data");
+				return 0;
+			}
+			y=readMatrix(argv[5+time],v2,n2);
+
+			if(y==2)
+			{
+				help("This File does not contain any data");
+				return 0;
+			}
+
+			if(y==1)
+			{
+				help("Invalid Data");
+				return 0;
+			}
+
+			vector<vf> res;
+			conv_matrmult_pad(v1, v2, k, res, mode);
+			print(res);
+		}
+		else
+			help("Invalid Format");
+	}
+
+	else if(argc==7+time)
+	{
+		if(!strcmp(argv[1+time],"convolution_withpadding_conv")||!strcmp(argv[1+time],"convolution_withoutpadding_matrixmult"))
 		{
 			int k=atoi(argv[2+time]);
 			int n1=atoi(argv[4+time]);
@@ -173,10 +227,10 @@ int main(int argc, char** argv)
 			}
 
 			vector<vf> res;
-			if(!strcmp(argv[1+time],"convolution_withpadding_matrixmult"))
-				conv_matrmult_pad(v1, v2, k, res);
-			else
+			if(!!strcmp(argv[1+time],"convolution_withpadding_conv"))
 				convolution_pad(v1, v2, k, res);
+			else
+				conv_matrmult_npad(v1,v2,res,k);
 			print(res);
 		}
 		else
@@ -227,7 +281,7 @@ int main(int argc, char** argv)
 			
 			vector<vf> res;
 			if(!strcmp(argv[1+time],"convolution_withoutpadding_matrixmult"))
-				conv_matrmult_npad(v1, v2, res);
+				conv_matrmult_npad(v1, v2, res, 1);
 			else
 				convolution_npad(v1, v2, res);
 			print(res);
@@ -339,5 +393,8 @@ int main(int argc, char** argv)
 	{
 		help("Invalid Format");
 	}
+	endT = chrono::system_clock::now();
+	chrono::duration<double> elapsed_seconds = endT - startT;
+	cout<<"Time: "<<elapsed_seconds.count()<<"\n";
 	return 0;
 }

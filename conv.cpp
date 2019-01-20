@@ -1,13 +1,15 @@
 #include "defs.h"
 #include "library.h"
+#include <cblas.h>
+
+vector<vf> toeplitz_matrix;
+vf kern_column;
+vf res_line;
 
 struct thread_data
 {
 	int tid;
 	int tot;
-	vector<vf>* v1;
-	vf v2;
-	vf* res;
 };
 
 void padding(vector<vf> &img, int pad)
@@ -26,68 +28,87 @@ void padding(vector<vf> &img, int pad)
 	img.insert(img.end(),pad,zero1);
 }
 
-void matrix_multiply(vector<vf>& v1, vf& v2, vf& res)
+void matrix_multiply_openblas()
 {
-	int a=v1.size();
-	int b=v2.size();
-	for(int i=0;i<a;++i)
+	int m = toeplitz_matrix.size();
+	int k = kern_column.size();
+	double* A = (double*)malloc(m*k*sizeof(double));
+	double* B = (double*)malloc(k*sizeof(double));
+	double* C = (double*)malloc(m*sizeof(double));
+
+	for(int i=0;i<m*k;++i)
+		A[i] = toeplitz_matrix[i/k][i%k];
+	for(int i=0;i<k;++i)
+		B[i] = kern_column[i];
+	for(int i=0;i<m;++i)
+		C[i] = 0.0;
+
+	cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, 1, k, 1, A, k, B, 1, 0, C, 1);
+
+	for(int i=0;i<m;++i)
+		res_line[i] = (float)C[i];
+}
+
+void matrix_multiply_mkl()
+{
+
+}
+
+void matrix_multiply_normal()
+{
+	int a=toeplitz_matrix.size();
+	int b=kern_column.size();
+
+	for(int i=0;i<a;i++)
 	{
 		float sum=0.0f;
-		for(int j=0;j<b;++j)
-			sum+=v1[i][j]*v2[j];
-		res.pb(sum);
+		for(int j=0;j<b;j++)
+		{
+			sum+=kern_column[j]*toeplitz_matrix[i][j];
+		}
+		res_line[i]=sum;
 	}
 }
 
 void* thread_routine(void* arg)
 {
-	float sum=0.0f;
+	
 	thread_data* data = (thread_data*)arg;
-	for(int i=0;i<min((int)(data->v1->size()),(data->tid)+(data->tot));++i)
+	for(int i=data->tid;i<min((int)toeplitz_matrix.size(),(data->tid)+(data->tot));++i)
 	{
-		for(int j=0;j<((data->v1)->at(i)).size();j++)
+		float sum=0.0f;
+		for(int j=0;j<kern_column.size();j++)
 		{
-			sum+= ((data->v1)->at(i)).at(j)*(data->v2[j]);
+			sum+= toeplitz_matrix[i][j] * kern_column[j];
 		}
-		vf* temp=data->res;
-		(*temp).at(data->tid+i)=sum;
+		res_line[i]=sum;
 	}
 	
 }
 
-void matrix_multiply_pthread(vector<vf>& v1, vf& v2, vf* res)
+void matrix_multiply_pthread()
 {
-	int N = v1.size();
-	pthread_t threads[10];
+	int N = toeplitz_matrix.size();
+	pthread_t threads[Nmax];
 	thread_data *td;
-	td= new thread_data[10];
+	td= new thread_data[Nmax];
 	int j=0,i=0;
-	int y=((N-1)/10)+1;
-	for(i=0;i<10;i++)
+	int y=((N-1)/Nmax)+1;
+	for(i=0;i<Nmax;i++)
 	{
-		td[j].tid=j;
-		td[j].v1 = &v1;
-		td[j].v2 = v2;
-		td[j].res = res;
-		td[j].tot=y;
-		int thread_error = pthread_create(&threads[j],NULL ,thread_routine, (void*) &td[j]);
+		td[i].tid=j;
+		td[i].tot=y;
+		// cout<<j<<endl;
+		int thread_error = pthread_create(&threads[i],NULL ,thread_routine, (void*) &td[i]);
 		if(thread_error)
 			cout<<"Thread error\n";
 		j+=y;
 		if(j>=N)
 			break;
+
 	}
-	/*for(int i=x;i<min(N,Nmax+x);++i,++j)
-	{
-		td[j].tid=i;
-		td[j].v1=&v1[i];
-		td[j].v2=v2;
-		td[j].res = res;
-		int thread_error=pthread_create(&threads[j], NULL, thread_routine, (void*) &td[j]);
-		if(thread_error)
-			cout<<"Thread error\n";
-	}*/
-	for(int j=0;j<min(i,10);++j)
+	
+	for(int j=0;j<i;++j)
 		pthread_join(threads[j], NULL);
 }
 
@@ -125,57 +146,61 @@ void convolution_pad(vector<vf>& img, vector<vf>& kern, int pad, vector<vf>& res
 	convolution_npad(img, kern, res);
 }
 
-void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res)
+void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res, int mode)
 {
 	int na=img.size();
 	int nb=kern.size();
 	int n=na-nb+1;
-	vf kern_column;
-	vector<vf> tmatrix;
 
+	kern_column.clear();
+	toeplitz_matrix.clear();
+	res_line.clear();
+	kern_column.resize(nb*nb);
+	toeplitz_matrix.resize(n*n, kern_column);
+	res_line.resize(n*n);
 
-	for(int i=0;i<nb;++i)
+	for(int i=nb-1,k=0;i>=0;--i)
 	{
-		for(int j=0;j<nb;++j)
-			kern_column.pb(kern[nb-i-1][nb-j-1]);
+		for(int j=nb-1;j>=0;--j,++k)
+			kern_column[k]=kern[i][j];
 	}
 
 	for(int i=0;i<na-nb+1;++i)
 	{
 		for(int j=0;j<na-nb+1;++j)
 		{
-			vf temp;
 			for(int m=0;m<nb;++m)
 			{
 				for(int n=0;n<nb;++n)
-					temp.pb(img[i+m][j+n]);
+					toeplitz_matrix[j+i*n][n+m*nb]=img[i+m][j+n];
 			}
-			tmatrix.pb(temp);
 		}
 	}
-
-	vf line(n*n,0);
-	// vf line;
-	int x=0;
-	int pt=0;
-	/*while(x!=10)
+	switch(mode)
 	{
-		matrix_multiply_pthread(tmatrix, kern_column, &line,pt);
-		x++;
-		pt+=Nmax;
-	}*/
-	// matrix_multiply(tmatrix, kern_column, line);
-	matrix_multiply_pthread(tmatrix, kern_column, &line);
+		case 1:
+			matrix_multiply_normal();
+			break;
+		case 2:
+			matrix_multiply_pthread();
+			break;
+		// case 4:
+		// 	matrix_multiply_mkl();
+			break;
+		case 3:
+			matrix_multiply_openblas();
+	}
+
 	for(int i=0;i<n;++i)
 	{
-		vf temp2(line.begin()+i*n, line.begin()+(i+1)*n);
+		vf temp2(res_line.begin()+i*n, res_line.begin()+(i+1)*n);
 		res.pb(temp2);
 	}
 
 }
 
-void conv_matrmult_pad(vector<vf>& img, vector<vf>& kern, int pad, vector<vf>& res)
+void conv_matrmult_pad(vector<vf>& img, vector<vf>& kern, int pad, vector<vf>& res,int mode)
 {
 	padding(img, pad);
-	conv_matrmult_npad(img, kern, res);
+	conv_matrmult_npad(img, kern, res, mode);
 }

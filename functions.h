@@ -8,5 +8,5 @@ void maxPool(std::vector<std::vector<float> >& v, std::vector<std::vector<float>
 void averagePool(std::vector<std::vector<float> >& v, std::vector<std::vector<float> >& av_pool);
 void convolution_npad(std::vector<std::vector<float> >& img, std::vector<std::vector<float> >& kern, std::vector<std::vector<float> >& res);
 void convolution_pad(std::vector<std::vector<float> >& img, std::vector<std::vector<float> >& kern, int pad, std::vector<std::vector<float> >& res);
-void conv_matrmult_npad(std::vector<std::vector<float> >& img, std::vector<std::vector<float> >& kern, std::vector<std::vector<float> >& res);
-void conv_matrmult_pad(std::vector<std::vector<float> >& img, std::vector<std::vector<float> >& kern, int pad, std::vector<std::vector<float> >& res);
+void conv_matrmult_npad(std::vector<std::vector<float> >& img, std::vector<std::vector<float> >& kern, std::vector<std::vector<float> >& res, int mode);
+void conv_matrmult_pad(std::vector<std::vector<float> >& img, std::vector<std::vector<float> >& kern, int pad, std::vector<std::vector<float> >& res, int mode);

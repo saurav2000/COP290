@@ -4,7 +4,8 @@
 struct thread_data
 {
 	int tid;
-	vf v1;
+	int tot;
+	vector<vf>* v1;
 	vf v2;
 	vf* res;
 };
@@ -42,32 +43,52 @@ void* thread_routine(void* arg)
 {
 	float sum=0.0f;
 	thread_data* data = (thread_data*)arg;
-	for(int i=0;i<data->v1.size();++i)
-		sum+= data->v1[i]*data->v2[i];
+	for(int i=0;i<min((int)(data->v1->size()),(data->tid)+(data->tot));++i)
+	{
+		for(int j=0;j<((data->v1)->at(i)).size();j++)
+		{
+			sum+= ((data->v1)->at(i)).at(j)*(data->v2[j]);
+		}
+		vf* temp=data->res;
+		(*temp).at(data->tid+i)=sum;
+	}
 	
-	vf* temp=data->res;
-	(*temp).at(data->tid)=sum;
 }
 
-void matrix_multiply_pthread(vector<vf>& v1, vf& v2, vf* res,int x)
+void matrix_multiply_pthread(vector<vf>& v1, vf& v2, vf* res)
 {
 	int N = v1.size();
-	pthread_t threads[Nmax];
+	pthread_t threads[10];
 	thread_data *td;
-	td= new thread_data[Nmax];
-	int j=0;
-	for(int i=x;i<min(N,Nmax+x);++i,++j)
+	td= new thread_data[10];
+	int j=0,i=0;
+	int y=((N-1)/10)+1;
+	for(i=0;i<10;i++)
+	{
+		td[j].tid=j;
+		td[j].v1 = &v1;
+		td[j].v2 = v2;
+		td[j].res = res;
+		td[j].tot=y;
+		int thread_error = pthread_create(&threads[j],NULL ,thread_routine, (void*) &td[j]);
+		if(thread_error)
+			cout<<"Thread error\n";
+		j+=y;
+		if(j>=N)
+			break;
+	}
+	/*for(int i=x;i<min(N,Nmax+x);++i,++j)
 	{
 		td[j].tid=i;
-		td[j].v1=v1[i];
+		td[j].v1=&v1[i];
 		td[j].v2=v2;
 		td[j].res = res;
 		int thread_error=pthread_create(&threads[j], NULL, thread_routine, (void*) &td[j]);
 		if(thread_error)
 			cout<<"Thread error\n";
-	}
-	for(int i=0;i<j;++i)
-		pthread_join(threads[i], NULL);
+	}*/
+	for(int j=0;j<min(i,10);++j)
+		pthread_join(threads[j], NULL);
 }
 
 void convolution_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res)
@@ -135,15 +156,16 @@ void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res)
 
 	vf line(n*n,0);
 	// vf line;
-	int x=n*n;
+	int x=0;
 	int pt=0;
-	while(x>0)
+	/*while(x!=10)
 	{
 		matrix_multiply_pthread(tmatrix, kern_column, &line,pt);
-		x-=Nmax;
+		x++;
 		pt+=Nmax;
-	}
+	}*/
 	// matrix_multiply(tmatrix, kern_column, line);
+	matrix_multiply_pthread(tmatrix, kern_column, &line);
 	for(int i=0;i<n;++i)
 	{
 		vf temp2(line.begin()+i*n, line.begin()+(i+1)*n);

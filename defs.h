@@ -31,5 +31,5 @@
 #endif
 
 #ifndef Nmax
-#define Nmax 3
+#define Nmax 4
 #endif

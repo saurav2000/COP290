@@ -123,8 +123,8 @@ void help(string s)
 
 int main(int argc, char** argv) 
 {
-	chrono::time_point<chrono::system_clock> startT, endT;
-    startT = chrono::system_clock::now();  
+	// chrono::time_point<chrono::system_clock> startT, endT;
+	// startT = chrono::system_clock::now();  
 	int time;
 	if(strcmp(argv[0],"time"))
 		time=0;
@@ -225,13 +225,13 @@ int main(int argc, char** argv)
 				help("Invalid Data");
 				return 0;
 			}
-
 			vector<vf> res;
-			if(!!strcmp(argv[1+time],"convolution_withpadding_conv"))
+			if(!strcmp(argv[1+time],"convolution_withpadding_conv"))
 				convolution_pad(v1, v2, k, res);
 			else
 				conv_matrmult_npad(v1,v2,res,k);
-			print(res);
+			
+			// print(res);
 		}
 		else
 			help("Invalid Format");
@@ -393,8 +393,8 @@ int main(int argc, char** argv)
 	{
 		help("Invalid Format");
 	}
-	endT = chrono::system_clock::now();
-	chrono::duration<double> elapsed_seconds = endT - startT;
-	cout<<"Time: "<<elapsed_seconds.count()<<"\n";
+	
+	// chrono::duration<double> elapsed_seconds = endT - startT;
+	// cout<<"Time: "<<elapsed_seconds.count()<<"\n";
 	return 0;
 }

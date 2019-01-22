@@ -1,6 +1,7 @@
 #include "defs.h"
 #include "library.h"
 #include <cblas.h>
+using namespace std::chrono;
 
 vector<vf> toeplitz_matrix;
 vf kern_column;
@@ -28,25 +29,16 @@ void padding(vector<vf> &img, int pad)
 	img.insert(img.end(),pad,zero1);
 }
 
-void matrix_multiply_openblas()
+void matrix_multiply_openblas(float* A, float* B, float* C)
 {
 	int m = toeplitz_matrix.size();
 	int k = kern_column.size();
-	double* A = (double*)malloc(m*k*sizeof(double));
-	double* B = (double*)malloc(k*sizeof(double));
-	double* C = (double*)malloc(m*sizeof(double));
+	
 
-	for(int i=0;i<m*k;++i)
-		A[i] = toeplitz_matrix[i/k][i%k];
-	for(int i=0;i<k;++i)
-		B[i] = kern_column[i];
-	for(int i=0;i<m;++i)
-		C[i] = 0.0;
-
-	cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, 1, k, 1, A, k, B, 1, 0, C, 1);
+	cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, 1, k, 1, A, k, B, 1, 0, C, 1);
 
 	for(int i=0;i<m;++i)
-		res_line[i] = (float)C[i];
+		res_line[i] = C[i];
 }
 
 void matrix_multiply_mkl()
@@ -58,7 +50,7 @@ void matrix_multiply_normal()
 {
 	int a=toeplitz_matrix.size();
 	int b=kern_column.size();
-
+	cout<<a<<" "<<b<<"\n";
 	for(int i=0;i<a;i++)
 	{
 		float sum=0.0f;
@@ -176,6 +168,20 @@ void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res, int 
 			}
 		}
 	}
+	int m = toeplitz_matrix.size();
+	int k = kern_column.size();
+	float* A = (float*)malloc(m*k*sizeof(float));
+	float* B = (float*)malloc(k*sizeof(float));
+	float* C = (float*)malloc(m*sizeof(float));
+
+	for(int i=0;i<m*k;++i)
+		A[i] = toeplitz_matrix[i/k][i%k];
+	for(int i=0;i<k;++i)
+		B[i] = kern_column[i];
+	for(int i=0;i<m;++i)
+		C[i] = 0.0;
+	auto startT = high_resolution_clock::now();
+	cout<<mode<<"\n";
 	switch(mode)
 	{
 		case 1:
@@ -188,14 +194,17 @@ void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res, int 
 		// 	matrix_multiply_mkl();
 			break;
 		case 3:
-			matrix_multiply_openblas();
+			matrix_multiply_openblas(A,B,C);
 	}
-
+	auto stopT = high_resolution_clock::now();
+	auto elapsed_seconds = duration_cast<microseconds>(stopT - startT);
+	cout<<"Time: "<<elapsed_seconds.count()<<"\n";
 	for(int i=0;i<n;++i)
 	{
 		vf temp2(res_line.begin()+i*n, res_line.begin()+(i+1)*n);
 		res.pb(temp2);
 	}
+	// cout<<"why>";
 
 }
 

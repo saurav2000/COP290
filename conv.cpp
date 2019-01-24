@@ -1,6 +1,7 @@
 #include "defs.h"
 #include "library.h"
 #include <cblas.h>
+#include "matrixmkl.h"
 using namespace std::chrono;
 
 vector<vf> toeplitz_matrix;
@@ -36,14 +37,6 @@ void matrix_multiply_openblas(float* A, float* B, float* C)
 	
 
 	cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, 1, k, 1, A, k, B, 1, 0, C, 1);
-
-	for(int i=0;i<m;++i)
-		res_line[i] = C[i];
-}
-
-void matrix_multiply_mkl()
-{
-
 }
 
 void matrix_multiply_normal()
@@ -161,10 +154,10 @@ void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res, int 
 	{
 		for(int j=0;j<na-nb+1;++j)
 		{
-			for(int m=0;m<nb;++m)
+			for(int k=0;k<nb;++k)
 			{
-				for(int n=0;n<nb;++n)
-					toeplitz_matrix[j+i*n][n+m*nb]=img[i+m][j+n];
+				for(int l=0;l<nb;++l)
+					toeplitz_matrix[j+i*n][l+k*nb]=img[i+k][j+l];
 			}
 		}
 	}
@@ -181,7 +174,7 @@ void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res, int 
 	for(int i=0;i<m;++i)
 		C[i] = 0.0;
 	auto startT = high_resolution_clock::now();
-	cout<<mode<<"\n";
+	// cout<<mode<<"\n";
 	switch(mode)
 	{
 		case 1:
@@ -190,15 +183,17 @@ void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res, int 
 		case 2:
 			matrix_multiply_pthread();
 			break;
-		// case 4:
-		// 	matrix_multiply_mkl();
+		case 4:
+		 	matrix_multiply_mkl(A, B, C, m, k);
 			break;
 		case 3:
 			matrix_multiply_openblas(A,B,C);
 	}
 	auto stopT = high_resolution_clock::now();
 	auto elapsed_seconds = duration_cast<microseconds>(stopT - startT);
-	cout<<"Time: "<<elapsed_seconds.count()<<"\n";
+	cout<<elapsed_seconds.count()<<"\n";
+	for(int i=0;i<m;++i)
+		res_line[i] = C[i];
 	for(int i=0;i<n;++i)
 	{
 		vf temp2(res_line.begin()+i*n, res_line.begin()+(i+1)*n);
@@ -211,5 +206,6 @@ void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res, int 
 void conv_matrmult_pad(vector<vf>& img, vector<vf>& kern, int pad, vector<vf>& res,int mode)
 {
 	padding(img, pad);
+	
 	conv_matrmult_npad(img, kern, res, mode);
 }

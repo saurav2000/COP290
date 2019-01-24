@@ -1,0 +1,1 @@
+void matrix_multiply_mkl(float* A, float* B, float* C, int m, int k);

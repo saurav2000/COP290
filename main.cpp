@@ -44,6 +44,8 @@ int readMatrix(char* s,vector<vf> &v1,int n)
 		if(j<n)
 			return 1;
 		res.pb(temp);
+		if(res.size()==n)
+			break;
 	}
 	filein.close();
 	if(res.size()==0)

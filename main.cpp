@@ -93,9 +93,11 @@ void help(string s)
 	cout<<"input format : $ ./image (followed by the following\n\n";
 
 	cout<<"To call Convolution with padding using matrix multiplication\n";
-	cout<<"\tconvolution_withpadding_matrixmult padsize matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows\n";
+	cout<<"\tconvolution_withpadding_matrixmult padsize mode matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows\n";
 	cout<<"To call Convolution without padding using matrix multiplication \n";
-	cout<<"\tconvolution_withoutpadding_matrixmult matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows\n";
+	cout<<"\tconvolution_withoutpadding_matrixmult mode matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows\n";
+
+	cout<<"where mode is 1 for normal multiplication, 2 for pthread, 3 for OpenBLAS, 4 for MKL.\n";
 
 	cout<<"To call Convolution with padding using convolution\n";
 	cout<<"\tconvolution_withpadding_conv padsize matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows\n";
@@ -125,8 +127,6 @@ void help(string s)
 
 int main(int argc, char** argv) 
 {
-	// chrono::time_point<chrono::system_clock> startT, endT;
-	// startT = chrono::system_clock::now();  
 	int time;
 	if(strcmp(argv[0],"time"))
 		time=0;
@@ -142,7 +142,7 @@ int main(int argc, char** argv)
 			int n2=atoi(argv[7+time]);
 			int mode=atoi(argv[3+time]);
 
-			if(k==0||n1==0||n2==0||mode==0)
+			if(k==0||n1==0||n2==0||mode<1||mode>4)
 			{
 				help("Invalid Argument");
 				return 0;
@@ -199,6 +199,12 @@ int main(int argc, char** argv)
 				return 0;
 			}
 
+			if(!strcmp(argv[1+time],"convolution_withoutpadding_matrixmult")&&(k<1||k>4))
+			{
+				help("Invalid Argument");
+				return 0;
+			}
+
 			vector<vf> v1;
 			vector<vf> v2;
 			int y=readMatrix(argv[3+time],v1,n1);
@@ -233,7 +239,7 @@ int main(int argc, char** argv)
 			else
 				conv_matrmult_npad(v1,v2,res,k);
 			
-			// print(res);
+			print(res);
 		}
 		else
 			help("Invalid Format");
@@ -396,7 +402,5 @@ int main(int argc, char** argv)
 		help("Invalid Format");
 	}
 	
-	// chrono::duration<double> elapsed_seconds = endT - startT;
-	// cout<<"Time: "<<elapsed_seconds.count()<<"\n";
 	return 0;
 }

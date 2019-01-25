@@ -190,16 +190,19 @@ void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res, int 
 	}
 	auto stopT = high_resolution_clock::now();
 	auto elapsed_seconds = duration_cast<microseconds>(stopT - startT);
-	cout<<elapsed_seconds.count()<<" ";
-	if(mode==4)
-		cout<<"\n";
-	for(int i=0;i<m;++i)
-		res_line[i] = C[i];
+	cout<<elapsed_seconds.count()<<"\n";
+	
+	if(mode==3||mode==4)
+	{
+		for(int i=0;i<m;++i)
+			res_line[i] = C[i];
+	}
 	for(int i=0;i<n;++i)
 	{
 		vf temp2(res_line.begin()+i*n, res_line.begin()+(i+1)*n);
 		res.pb(temp2);
 	}
+
 	// cout<<"why>";
 
 }

@@ -43,7 +43,6 @@ void matrix_multiply_normal()
 {
 	int a=toeplitz_matrix.size();
 	int b=kern_column.size();
-	cout<<a<<" "<<b<<"\n";
 	for(int i=0;i<a;i++)
 	{
 		float sum=0.0f;
@@ -191,7 +190,9 @@ void conv_matrmult_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res, int 
 	}
 	auto stopT = high_resolution_clock::now();
 	auto elapsed_seconds = duration_cast<microseconds>(stopT - startT);
-	cout<<elapsed_seconds.count()<<"\n";
+	cout<<elapsed_seconds.count()<<" ";
+	if(mode==4)
+		cout<<"\n";
 	for(int i=0;i<m;++i)
 		res_line[i] = C[i];
 	for(int i=0;i<n;++i)

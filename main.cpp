@@ -138,9 +138,9 @@ int main(int argc, char** argv)
 		if(!strcmp(argv[1+time],"convolution_withpadding_matrixmult"))
 		{
 			int k=atoi(argv[2+time]);
-			int n1=atoi(argv[4+time]);
-			int n2=atoi(argv[6+time]);
-			int mode=atoi(argv[7+time]);
+			int n1=atoi(argv[5+time]);
+			int n2=atoi(argv[7+time]);
+			int mode=atoi(argv[3+time]);
 
 			if(k==0||n1==0||n2==0||mode==0)
 			{
@@ -150,7 +150,7 @@ int main(int argc, char** argv)
 
 			vector<vf> v1;
 			vector<vf> v2;
-			int y=readMatrix(argv[3+time],v1,n1);
+			int y=readMatrix(argv[4+time],v1,n1);
 
 			if(y==2)
 			{
@@ -163,7 +163,7 @@ int main(int argc, char** argv)
 				help("Invalid Data");
 				return 0;
 			}
-			y=readMatrix(argv[5+time],v2,n2);
+			y=readMatrix(argv[6+time],v2,n2);
 
 			if(y==2)
 			{

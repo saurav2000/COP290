@@ -98,6 +98,9 @@ void help(string s)
 
 	cout<<"input format : $ ./image (followed by the following\n\n";
 
+	cout<<"To implement the LeNet Architecture\n";
+	cout<<"\t normalised_image_data.txt conv1.txt conv2.txt fc1.txt fc2.txt\n";
+
 	cout<<"To call Convolution with padding using matrix multiplication\n";
 	cout<<"\tconvolution_withpadding_matrixmult padsize mode matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows\n";
 	cout<<"To call Convolution without padding using matrix multiplication \n";
@@ -198,7 +201,29 @@ int main(int argc, char** argv)
 			vvf image;
 			vf prob;
 			int y=readMatrix(argv[2+time],image,28,0);
+			if(y==2)
+			{
+				help("This File does not contain any data");
+				return 0;
+			}
+
+			if(y==1)
+			{
+				help("Invalid Data");
+				return 0;
+			}
 			y=leNetArchitecture(image,argv[3+time],argv[4+time],argv[5+time],argv[6+time],prob);
+			if(y==2)
+			{
+				help("This File does not contain any data");
+				return 0;
+			}
+
+			if(y==1)
+			{
+				help("Invalid Data");
+				return 0;
+			}
 			return 0;
 		}
 

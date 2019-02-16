@@ -110,7 +110,7 @@ void convolution_npad(vector<vf>& img, vector<vf>& kern, vector<vf>& res)
 			for(int m=0;m<nb;++m)
 			{
 				for(int n=0;n<nb;++n)
-					sum+= img[m+i][n+j] * kern[nb-m-1][nb-n-1];
+					sum+= img[m+i][n+j] * kern[m][n];
 			}
 			arr[i][j]=sum;
 		}

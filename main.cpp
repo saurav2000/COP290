@@ -1,8 +1,9 @@
 #include "defs.h"
 #include "library.h"
 #include "functions.h"
+#include "leNet.h"
 
-void print(vector<vf> v)
+void print(vvf v)
 {
 	cout<<fixed<<setprecision(10);
 	for(int i=0;i<v.size();++i)
@@ -20,11 +21,11 @@ void print(vf v)
 	cout<<"\n";
 }
 
-int readMatrix(char* s,vector<vf> &v1,int n)
+int readMatrix(char* s, vvf &v1, int n, int columnMajor) //returns a corresponding error code for main functions
 {
 	if(n==0)
 		return 2;
-	vector<vf> res;
+	vvf res;
 	ifstream filein;
 	float f;
 	filein.open(s);
@@ -34,7 +35,7 @@ int readMatrix(char* s,vector<vf> &v1,int n)
 	while(filein>>f)
 	{
 		vf temp;
-		temp.push_back(f);
+		temp.pb(f);
 		j=1;
 		while(j<n && filein>>f)
 		{
@@ -58,14 +59,19 @@ int readMatrix(char* s,vector<vf> &v1,int n)
 		vf temp;
 
 		for(int j=0;j<n;j++)
-			temp.push_back(res[j][i]);
-		v1.push_back(temp);
+		{
+			if(columnMajor)
+				temp.pb(res[j][i]);
+			else
+				temp.pb(res[i][j]);
+		}
+		v1.pb(temp);
 	}
 
 	return 0;
 }
 
-int readVector(char* s,vf& v1,int n)
+int readVector(char* s, vf& v1, int n)
 {
 	if(n==0)
 		return 2;
@@ -91,6 +97,9 @@ void help(string s)
 	cout<<s<<"\n\n";
 
 	cout<<"input format : $ ./image (followed by the following\n\n";
+
+	cout<<"To implement the LeNet Architecture\n";
+	cout<<"\t normalised_image_data.txt conv1.txt conv2.txt fc1.txt fc2.txt\n";
 
 	cout<<"To call Convolution with padding using matrix multiplication\n";
 	cout<<"\tconvolution_withpadding_matrixmult padsize mode matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows\n";
@@ -148,9 +157,9 @@ int main(int argc, char** argv)
 				return 0;
 			}
 
-			vector<vf> v1;
-			vector<vf> v2;
-			int y=readMatrix(argv[4+time],v1,n1);
+			vvf v1;
+			vvf v2;
+			int y=readMatrix(argv[4+time],v1,n1,1);
 
 			if(y==2)
 			{
@@ -163,7 +172,7 @@ int main(int argc, char** argv)
 				help("Invalid Data");
 				return 0;
 			}
-			y=readMatrix(argv[6+time],v2,n2);
+			y=readMatrix(argv[6+time],v2,n2,1);
 
 			if(y==2)
 			{
@@ -177,7 +186,7 @@ int main(int argc, char** argv)
 				return 0;
 			}
 
-			vector<vf> res;
+			vvf res;
 			conv_matrmult_pad(v1, v2, k, res, mode);
 			print(res);
 		}
@@ -187,7 +196,38 @@ int main(int argc, char** argv)
 
 	else if(argc==7+time)
 	{
-		if(!strcmp(argv[1+time],"convolution_withpadding_conv")||!strcmp(argv[1+time],"convolution_withoutpadding_matrixmult"))
+		if(!strcmp(argv[1+time],"lenet"))
+		{
+			vvf image;
+			vf prob;
+			int y=readMatrix(argv[2+time],image,28,0);
+			if(y==2)
+			{
+				help("This File does not contain any data");
+				return 0;
+			}
+
+			if(y==1)
+			{
+				help("Invalid Data");
+				return 0;
+			}
+			y=leNetArchitecture(image,argv[3+time],argv[4+time],argv[5+time],argv[6+time],prob);
+			if(y==2)
+			{
+				help("This File does not contain any data");
+				return 0;
+			}
+
+			if(y==1)
+			{
+				help("Invalid Data");
+				return 0;
+			}
+			return 0;
+		}
+
+		else if(!strcmp(argv[1+time],"convolution_withpadding_conv")||!strcmp(argv[1+time],"convolution_withoutpadding_matrixmult"))
 		{
 			int k=atoi(argv[2+time]);
 			int n1=atoi(argv[4+time]);
@@ -205,9 +245,9 @@ int main(int argc, char** argv)
 				return 0;
 			}
 
-			vector<vf> v1;
-			vector<vf> v2;
-			int y=readMatrix(argv[3+time],v1,n1);
+			vvf v1;
+			vvf v2;
+			int y=readMatrix(argv[3+time],v1,n1,1);
 
 			if(y==2)
 			{
@@ -220,7 +260,7 @@ int main(int argc, char** argv)
 				help("Invalid Data");
 				return 0;
 			}
-			y=readMatrix(argv[5+time],v2,n2);
+			y=readMatrix(argv[5+time],v2,n2,1);
 
 			if(y==2)
 			{
@@ -233,13 +273,13 @@ int main(int argc, char** argv)
 				help("Invalid Data");
 				return 0;
 			}
-			vector<vf> res;
+			vvf res;
 			if(!strcmp(argv[1+time],"convolution_withpadding_conv"))
 				convolution_pad(v1, v2, k, res);
 			else
 				conv_matrmult_npad(v1,v2,res,k);
 			
-			print(res);
+			// print(res);
 		}
 		else
 			help("Invalid Format");
@@ -258,9 +298,9 @@ int main(int argc, char** argv)
 				return 0;
 			}
 
-			vector<vf> v1;
-			vector<vf> v2;
-			int y=readMatrix(argv[2+time],v1,n1);
+			vvf v1;
+			vvf v2;
+			int y=readMatrix(argv[2+time],v1,n1,1);
 
 			if(y==2)
 			{
@@ -273,7 +313,7 @@ int main(int argc, char** argv)
 				help("Invalid Data");
 				return 0;
 			}
-			y=readMatrix(argv[4+time],v2,n2);
+			y=readMatrix(argv[4+time],v2,n2,1);
 
 			if(y==2)
 			{
@@ -287,7 +327,7 @@ int main(int argc, char** argv)
 				return 0;
 			}
 			
-			vector<vf> res;
+			vvf res;
 			if(!strcmp(argv[1+time],"convolution_withoutpadding_matrixmult"))
 				conv_matrmult_npad(v1, v2, res, 1);
 			else
@@ -310,8 +350,8 @@ int main(int argc, char** argv)
 				return 0;
 			}
 
-			vector<vf> v1;
-			int y=readMatrix(argv[2+time],v1,n1);
+			vvf v1;
+			int y=readMatrix(argv[2+time],v1,n1,1);
 
 			if(y==2)
 			{
@@ -325,7 +365,7 @@ int main(int argc, char** argv)
 				return 0;
 			}
 
-			vector<vf> res;
+			vvf res;
 			if(!strcmp(argv[1+time],"subsampling_maxpooling"))
 				maxPool(v1, res);
 			else
@@ -342,8 +382,8 @@ int main(int argc, char** argv)
 				return 0;
 			}
 
-			vector<vf> v1;
-			int y=readMatrix(argv[2+time],v1,n1);
+			vvf v1;
+			int y=readMatrix(argv[2+time],v1,n1,1);
 
 			if(y==2)
 			{

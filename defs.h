@@ -6,6 +6,18 @@
 #define vf vector<float>
 #endif
 
+#ifndef vvf
+#define vvf vector<vector<float> >
+#endif
+
+#ifndef vvvf
+#define vvvf vector<vector<vector<float> > >
+#endif
+
+#ifndef vvvvf
+#define vvvvf vector<vector<vector<vector<float> > > >
+#endif
+
 #ifndef vd
 #define vd vector<double>
 #endif

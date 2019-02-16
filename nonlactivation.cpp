@@ -1,11 +1,11 @@
 #include "defs.h"
 #include "library.h"
 
-void relu(vector<vf> &vec)
+void relu(vvf &vec)
 {
 	int n=vec.size();
 	int i,j;
-	vector<vf> v1;
+	vvf v1;
 
 	for(i=0;i<n;i++)
 	{
@@ -14,7 +14,7 @@ void relu(vector<vf> &vec)
 	}
 }
 
-void tanh(vector<vf> &vec)
+void tanh(vvf &vec)
 {
 	int n=vec.size();
 	int i,j;

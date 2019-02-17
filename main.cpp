@@ -99,7 +99,7 @@ void help(string s)
 	cout<<"input format : $ ./image (followed by the following\n\n";
 
 	cout<<"To implement the LeNet Architecture\n";
-	cout<<"\t normalised_image_data.txt conv1.txt conv2.txt fc1.txt fc2.txt\n";
+	cout<<"\t lenet normalised_image_data.txt conv1.txt conv2.txt fc1.txt fc2.txt\n";
 
 	cout<<"To call Convolution with padding using matrix multiplication\n";
 	cout<<"\tconvolution_withpadding_matrixmult padsize mode matrix1.txt matrix1_numrows matrix2.txt matrix2_numrows\n";

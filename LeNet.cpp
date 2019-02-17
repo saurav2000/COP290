@@ -81,9 +81,15 @@ int leNetArchitecture(vvf &img, char* c1, char* c2, char* fc1, char* fc2, vf &pr
 
 
 	softmax(prob);
-	for(int i=0;i<prob.size();++i)
-	{
-		cout<<prob[i]<<"\n";
-	}
+	
+	vector<pair<float,int> > vect;
+	for (int i = 0; i < 10; ++i)
+		vect.pb(mp(prob[i],i));
+	
+	sort(vect.rbegin(), vect.rend());
+
+	for(auto i=0;i<10;++i)
+		cout<<"The probability of digit "<< vect[i].second << "is "<< vect[i].first<<"\n";
+	
 	return 0;
 }

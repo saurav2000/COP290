@@ -1,0 +1,88 @@
+\documentclass[conf]{new-aiaa}
+%\documentclass[journal]{new-aiaa} for journal papers
+\usepackage[utf8]{inputenc}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage[version=4]{mhchem}
+\usepackage{siunitx}
+\usepackage{longtable,tabularx}
+\setlength\LTleft{0pt} 
+\usepackage{lmodern}
+\usepackage{hyperref}
+\usepackage{authblk}
+% \usepackage{graphicx} 
+% \usepackage{psbox} 
+\usepackage{graphicx,epstopdf}
+\epstopdfsetup{update}
+\DeclareGraphicsExtensions{.ps}
+\epstopdfDeclareGraphicsRule{.ps}{pdf}{.pdf}{ps2pdf -dEPSCrop -dNOSAFER #1 \OutputFile}
+
+\renewcommand\Authfont{\fontsize{14}{14.4}\selectfont}
+
+\title{Accelerating Matrix Multiplication}
+
+\author{Namrata Priyadarshani \\ \href{mailto:cs1170353@cse.iitd.ac.in}{cs1170353@cse.iitd.ac.in}\and Musunuru Saurav \\ \href{mailto:cs1170352@cse.iitd.ac.in}{cs1170352@cse.iitd.ac.in}}
+
+
+\begin{document}
+\maketitle
+
+\section{Linear Algebra Libraries}
+We tried to accelerate matrix multiplication using different linear algebra libraries. We used Intel MKL\cite{mklLink} and linked it using
+\cite{mklDocumnent} which provides highly optimized, threaded and vectorized maths function that enhances performance on Intel processor architecture. It consists of Intel MKL DGEMM function which is highly optimized for matrix-multiplication accelerating the matrix-multiplication over 30 times the normal matrix-multiplication. We also implemented matrix-multiplication using OpenBLAS\cite{openBlas} function cblas\_sgemm  which also had a comparable performance with Intel MKL. These libraries highly optimizes the matrix-multiplication.
+
+% Random citation \autocite[1]{DUMMY:1} embeddeed in text.
+% \printbibliography
+
+\section{Performance Comparison}
+\vskip 0.2in
+\begin{center}
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline\hline                        %inserts double horizontal lines
+\multicolumn{3}{|c|}{Mean of latencies over different matrix sizes} \\
+\hline\hline
+Size of Matrix & Open BLAS & MKL \\ [2 ex]
+\hline
+500 & 2123 & 2155  \\% inserting body of the table
+750 & 4921 & 5001 \\[1ex]
+900 & 6026  & 6578  \\[1ex]
+1000 & 78078 & 79034 \\[1ex]
+\hline
+\end{tabular}
+
+\vskip 0.2in
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline\hline                        %inserts double horizontal lines
+\multicolumn{3}{|c|}{Standard Deviation of latencies over different matrix sizes} \\
+\hline\hline
+Size of Matrix & Open BLAS & MKL \\ [2 ex]
+\hline
+500 & 11 & 27  \\% inserting body of the table
+750 & 134 & 53  \\[1ex]
+900 & 19  & 51  \\[1ex]
+1000  & 367 & 146 \\[1ex]
+\hline
+\end{tabular}
+\vskip 0.2in
+
+In the above tables with matrix size 1000 we used a kernel of 10 and a kernel size of 3 with others
+
+\includegraphics[width=5in]{time1000.ps} 
+% \includegraphics[width=.5\textwidth]{time500.ps}
+\end{center}
+
+\section{Acceleration with pthreads}
+\vskip 0.2 in
+\begin{itemize}
+  \item In normal matrix we were carrying out single operation in one loop cycle.
+  \item Using pthread we divided matrix into quarters and all 4 threads were computing the 4 parts in parallel, optimizing the performance compared to naive matrix-multiplication.
+  \item Matrix-multiplication using pthread is nearly 3 times faster than normal matrix-multiplication.
+\end{itemize}
+
+\includegraphics[width=5in]{time500.ps} 
+
+\bibliography{report}
+
+\end{document}
